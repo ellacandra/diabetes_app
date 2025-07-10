@@ -1,0 +1,8 @@
+flask
+scikit-learn
+joblib
+pandas
+openai
+xhtml2pdf
+numpy
+matplotlib
