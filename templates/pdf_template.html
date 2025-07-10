@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: DejaVu Sans, sans-serif;
+        font-size: 12pt;
+        padding: 30px;
+      }
+      h1 {
+        color: #00796b;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      .label {
+        font-weight: bold;
+      }
+      .value {
+        margin-left: 10px;
+      }
+      .tips {
+        background: #e0f2f1;
+        padding: 10px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Hasil Prediksi Diabetes</h1>
+
+    <div class="section">
+      <span class="label">Hasil:</span>
+      <span class="value">{{ prediction }}</span>
+    </div>
+
+    <div class="section">
+      <span class="label">Probabilitas:</span>
+      <span class="value">{{ probability }}%</span>
+    </div>
+
+    <div class="section tips">
+      <span class="label">Tips Kesehatan:</span>
+      <p>{{ tips }}</p>
+    </div>
+
+    <p style="margin-top: 40px">
+      *Laporan ini dihasilkan otomatis oleh sistem prediksi diabetes
+    </p>
+  </body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Prediksi</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f1f5f9;
+        margin: 0;
+        padding: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        background: white;
+        max-width: 520px;
+        width: 100%;
+        padding: 36px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        animation: fadeIn 0.6s ease-in-out;
+      }
+
+      h1 {
+        font-size: 24px;
+        color: #00796b;
+        margin-bottom: 16px;
+        text-align: center;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #2d3748;
+      }
+
+      .btn {
+        display: block;
+        width: 100%;
+        background: #00796b;
+        color: white;
+        padding: 12px;
+        margin-top: 16px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        font-size: 15px;
+      }
+
+      .btn:hover {
+        background: #004d40;
+      }
+
+      .tips {
+        margin-top: 24px;
+        background: #e0f2f1;
+        padding: 18px;
+        border-left: 5px solid #00796b;
+        border-radius: 10px;
+        font-size: 15px;
+      }
+
+      form button {
+        background: #00796b;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        width: 100%;
+        font-size: 15px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 20px;
+        }
+        p,
+        .tips {
+          font-size: 14px;
+        }
+      }
+
+      #chatbot {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 300px;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      #chatbot-header {
+        background: #00796b;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      #chatbot-messages {
+        padding: 10px;
+        height: 200px;
+        overflow-y: auto;
+        font-size: 14px;
+      }
+
+      #chatbot-input {
+        display: flex;
+      }
+
+      #chatbot-input input {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-top: 1px solid #ccc;
+      }
+
+      #chatbot-input button {
+        padding: 10px;
+        background: #00796b;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      #chatbot-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #00796b;
+        color: white;
+        padding: 12px 16px;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+        z-index: 1000;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Hasil Prediksi: {{ prediction }}</h1>
+      <p>Probabilitas: <strong>{{ probability }}%</strong></p>
+
+      {% if tips %}
+      <div class="tips">
+        <strong>Tips Kesehatan:</strong>
+        <p>{{ tips }}</p>
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/download-pdf">
+        <input type="hidden" name="prediction" value="{{ prediction }}" />
+        <input type="hidden" name="probability" value="{{ probability }}" />
+        <input type="hidden" name="tips" value="{{ tips }}" />
+        <button type="submit" style="margin-top: 20px">📄 Unduh PDF</button>
+      </form>
+
+      <a href="/" class="btn">🔁 Kembali ke Form</a>
+      <a href="/history" class="btn" style="margin-top: 10px"
+        >📋 Lihat Riwayat</a
+      >
+    </div>
+
+    <button id="chatbot-toggle">💬</button>
+    <div id="chatbot">
+      <div id="chatbot-header">Asisten Kesehatan</div>
+      <div id="chatbot-messages"></div>
+      <div id="chatbot-input">
+        <input
+          type="text"
+          id="chatbot-question"
+          placeholder="Tanya sesuatu..."
+        />
+        <button onclick="askChatbot()">Kirim</button>
+      </div>
+    </div>
+
+    <script>
+      const chatbotToggle = document.getElementById("chatbot-toggle");
+      const chatbotBox = document.getElementById("chatbot");
+      const messages = document.getElementById("chatbot-messages");
+      const faq = {
+        "apa itu hba1c":
+          "HbA1c adalah kadar rata-rata gula darah selama 2-3 bulan terakhir.",
+        "bagaimana mencegah diabetes":
+          "Dengan pola makan sehat, olahraga rutin, dan menjaga berat badan.",
+        "apa gejala diabetes":
+          "Sering haus, sering buang air kecil, mudah lelah, dan luka sulit sembuh.",
+        "apakah boleh olahraga dengan diabetes":
+          "Ya, olahraga rutin justru sangat disarankan untuk penderita diabetes.",
+      };
+
+      chatbotToggle.onclick = () => {
+        chatbotBox.style.display =
+          chatbotBox.style.display === "none" ? "flex" : "none";
+      };
+
+      function askChatbot() {
+        const input = document.getElementById("chatbot-question");
+        const question = input.value.trim().toLowerCase();
+        if (!question) return;
+
+        messages.innerHTML += `<div><strong>Anda:</strong> ${question}</div>`;
+        const answer =
+          faq[question] ||
+          "Maaf, saya belum tahu jawaban untuk pertanyaan itu.";
+        messages.innerHTML += `<div><strong>Bot:</strong> ${answer}</div>`;
+        input.value = "";
+        messages.scrollTop = messages.scrollHeight;
+      }
+    </script>
+  </body>
+</html>

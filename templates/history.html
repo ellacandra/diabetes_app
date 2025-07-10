@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riwayat Prediksi</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f9fafb;
+        padding: 20px;
+        margin: 0;
+      }
+
+      h2 {
+        text-align: center;
+        color: #00796b;
+        margin-bottom: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+
+      th {
+        background-color: #00796b;
+        color: white;
+        position: sticky;
+        top: 0;
+      }
+
+      tr:hover {
+        background-color: #f1f5f9;
+      }
+
+      .btn,
+      button {
+        display: inline-block;
+        background: #00796b;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        margin: 5px 0;
+      }
+
+      .btn:hover,
+      button:hover {
+        background: #004d40;
+      }
+
+      .danger {
+        background: #e53935;
+      }
+      .danger:hover {
+        background: #b71c1c;
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      @media (max-width: 768px) {
+        table {
+          font-size: 13px;
+        }
+        th,
+        td {
+          padding: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Riwayat Prediksi Diabetes</h2>
+
+    <form method="GET">
+      <label>Filter hasil prediksi:</label>
+      <select name="filter">
+        <option value="">-- Semua --</option>
+        <option value="Diabetes">Diabetes</option>
+        <option value="No Diabetes">No Diabetes</option>
+      </select>
+      <button type="submit">🔍 Terapkan Filter</button>
+    </form>
+
+    {% if records %}
+    <table>
+      <thead>
+        <tr>
+          <th>Waktu</th>
+          <th>Usia</th>
+          <th>Gender</th>
+          <th>BMI</th>
+          <th>HbA1c</th>
+          <th>Glukosa</th>
+          <th>Hasil</th>
+          <th>Prob (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in records %}
+        <tr>
+          <td>{{ row.timestamp }}</td>
+          <td>{{ row.age }}</td>
+          <td>{{ row.gender }}</td>
+          <td>{{ row.bmi }}</td>
+          <td>{{ row.hba1c }}</td>
+          <td>{{ row.glucose }}</td>
+          <td>{{ row.prediction }}</td>
+          <td>{{ row.probability }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <form
+      method="POST"
+      action="/clear-history"
+      onsubmit="return confirm('Yakin ingin menghapus semua riwayat?')"
+    >
+      <button type="submit" class="danger">🧹 Hapus Semua Riwayat</button>
+      <a
+        href="/export-excel"
+        class="btn"
+        style="background: #1976d2; margin-left: 10px"
+        >⬇️ Export ke Excel</a
+      >
+    </form>
+    {% else %}
+    <p>Tidak ada riwayat prediksi.</p>
+    {% endif %}
+
+    <a href="/" class="btn">⬅ Kembali ke Form</a>
+  </body>
+</html>
