@@ -1,0 +1,6 @@
+.env
+model_rf_optuna.pkl
+__pycache__/
+*.pyc
+*.xlsx
+*.csv
