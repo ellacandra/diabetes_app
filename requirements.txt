@@ -6,3 +6,4 @@ openai
 xhtml2pdf
 numpy
 matplotlib
+python-dotenv
